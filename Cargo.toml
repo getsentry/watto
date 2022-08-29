@@ -1,0 +1,16 @@
+[package]
+name = "watto"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+std = []
+writer = ["std"]
+
+[dependencies]
+
+
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
