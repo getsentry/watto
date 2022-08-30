@@ -6,8 +6,10 @@ edition = "2021"
 [features]
 std = []
 writer = ["std"]
+strings = ["std", "leb128"]
 
 [dependencies]
+leb128 = { version = "0.2.5", optional = true }
 
 
 
