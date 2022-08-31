@@ -91,14 +91,4 @@ impl StringTable {
 
         std::str::from_utf8(bytes).map_err(ReadStringError::from)
     }
-
-    /// Returns the total length of the strings in this table (including length prefixes).
-    pub fn len(&self) -> usize {
-        self.bytes.len()
-    }
-
-    /// Returns true if this table is empty.
-    pub fn is_empty(&self) -> bool {
-        self.bytes.is_empty()
-    }
 }
