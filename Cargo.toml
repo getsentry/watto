@@ -3,6 +3,14 @@ name = "watto"
 version = "0.1.0"
 edition = "2021"
 
+description = "Utilities for parsing and serializing Plain Old Data"
+authors = ["Sentry <hello@sentry.io>"]
+license = "MIT"
+readme = "README.md"
+documentation = "https://docs.rs/watto"
+homepage = "https://github.com/getsentry/watto"
+repository = "https://github.com/getsentry/watto"
+
 [features]
 std = []
 writer = ["std"]
