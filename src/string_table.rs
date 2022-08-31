@@ -20,7 +20,12 @@ pub enum ReadStringError {
 ///
 /// Add strings to the table with [`insert`](StringTable::insert). The
 /// returned `usize` can be used to [`read`](StringTable::read) the string
-/// back from the table's serialized representation.
+/// back from the table's byte representation.
+///
+/// Use [`as_bytes`](StringTable::as_bytes) to obtain a byte representation of a `StringTable`.
+/// The byte representation is the concatenation of the strings that have been added to the table,
+/// with each individual string prefixed with its length in [LEB128 encoding](https://en.wikipedia.org/wiki/LEB128).
+/// The byte representation contains each string only once.
 ///
 /// # Example
 /// ```
@@ -70,10 +75,6 @@ impl StringTable {
 
     /// Returns a byte slice containing the concatenation of the strings that have been
     /// added to this `StringTable`.
-    ///
-    /// Each string is prefixed with its length in [LEB128 encoding](https://en.wikipedia.org/wiki/LEB128).
-    ///
-    /// Strings can be looked up using the `usize` returned by [`insert`](Self::insert).
     pub fn as_bytes(&self) -> &[u8] {
         &self.bytes
     }
