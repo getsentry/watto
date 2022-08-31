@@ -19,8 +19,9 @@ pub enum ReadStringError {
 /// A struct for storing strings without duplicates.
 ///
 /// Add strings to the table with [`insert`](StringTable::insert). The
-/// returned `usize` can be used to [`lookup`](StringTable::lookup) the string
-/// in the table's serialized representation.
+/// returned `usize` can be used to [`read`](StringTable::read) the string
+/// back from the table's serialized representation.
+///
 /// # Example
 /// ```
 /// use watto::StringTable;
@@ -28,8 +29,8 @@ pub enum ReadStringError {
 /// let foo_idx = table.insert("foo");
 /// let bar_idx = table.insert("bar");
 /// let string_bytes = table.as_bytes();
-/// assert_eq!(StringTable::lookup(string_bytes, foo_idx).unwrap(), "foo");
-/// assert_eq!(StringTable::lookup(string_bytes, bar_idx).unwrap(), "bar");
+/// assert_eq!(StringTable::read(string_bytes, foo_idx).unwrap(), "foo");
+/// assert_eq!(StringTable::read(string_bytes, bar_idx).unwrap(), "bar");
 /// ```
 #[derive(Debug, Clone, Default)]
 pub struct StringTable {
@@ -46,7 +47,7 @@ impl StringTable {
     /// Insert a string into this `StringTable`.
     ///
     /// Returns an offset that can be used to retrieve the inserted string
-    /// with [`lookup`](Self::lookup) after serializing this table with [`as_bytes`](Self::as_bytes).
+    /// with [`read`](Self::read) after serializing this table with [`as_bytes`](Self::as_bytes).
     pub fn insert(&mut self, s: &str) -> usize {
         let Self {
             ref mut strings,
@@ -79,10 +80,6 @@ impl StringTable {
 
     /// Returns the string stored at the given offset in the byte slice, if any.
     ///
-    /// Use this to look up a string that was previously [inserted](StringTable::insert) into a `StringTable`.
-    pub fn lookup(string_bytes: &[u8], offset: usize) -> Option<&str> {
-        let reader = &mut string_bytes.get(offset as usize..)?;
-        let len = leb128::read::unsigned(reader).ok()? as usize;
     /// Use this to retrieve a string that was previously [inserted](StringTable::insert) into a `StringTable`.
     pub fn read(string_bytes: &[u8], offset: usize) -> Result<&str, ReadStringError> {
         let reader = &mut string_bytes
