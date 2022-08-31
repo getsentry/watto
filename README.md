@@ -20,6 +20,8 @@ for example to write it out into an output buffer.
 `writer`: Exports an additional [`Writer`] wrapping a [`std::io::Write`]
 which allows explicitly aligning the output buffer by adding padding bytes.
 
+`strings`: Exports a [`StringTable`] for serializing and reading deduplicated strings.
+
 ## End-to-End Example
 
 ```rust
