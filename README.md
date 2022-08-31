@@ -81,3 +81,7 @@ assert_eq!(bs, &[B(4), B(5), B(6)]);
 > Watto: I hope you didn't kill anyone I know for it.
 >
 > -- [Star Wars: Episode I - The Phantom Menace](https://www.imdb.com/title/tt0120915/quotes/qt0270694)
+
+## License
+
+Watto is licensed under the MIT license.
