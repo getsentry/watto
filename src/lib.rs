@@ -7,11 +7,15 @@
 
 mod helpers;
 mod pod;
+#[cfg(feature = "strings")]
+mod string_table;
 mod utils;
 #[cfg(feature = "writer")]
 mod writer;
 
 pub use helpers::*;
 pub use pod::*;
+#[cfg(feature = "strings")]
+pub use string_table::*;
 #[cfg(feature = "writer")]
 pub use writer::*;

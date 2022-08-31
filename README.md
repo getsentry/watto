@@ -20,6 +20,8 @@ for example to write it out into an output buffer.
 `writer`: Exports an additional [`Writer`] wrapping a [`std::io::Write`]
 which allows explicitly aligning the output buffer by adding padding bytes.
 
+`strings`: Exports a [`StringTable`] for serializing and reading deduplicated strings.
+
 ## End-to-End Example
 
 ```rust
@@ -83,6 +85,7 @@ Differences between the two include:
 * In  `zerocopy`, reading a value requires wrapping it in `LayoutVerified`. In `watto`, types implementing
   `Pod` can be read directly.
 * `watto` includes a `Writer` that allows explicit alignment of output.
+* `watto` includes a `StringTable` for (de)serializing strings.
 * `zerocopy` includes endianness-aware integer types.
 ## Why Watto?
 
