@@ -85,6 +85,7 @@ Differences between the two include:
 * In  `zerocopy`, reading a value requires wrapping it in `LayoutVerified`. In `watto`, types implementing
   `Pod` can be read directly.
 * `watto` includes a `Writer` that allows explicit alignment of output.
+* `watto` includes a `StringTable` for (de)serializing strings.
 * `zerocopy` includes endianness-aware integer types.
 ## Why Watto?
 
