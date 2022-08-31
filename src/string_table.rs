@@ -1,5 +1,21 @@
+use core::str::Utf8Error;
 use std::collections::HashMap;
 
+use thiserror::Error;
+
+/// An error when trying to read a string from a serialized [`StringTable`].
+#[derive(Debug, Error)]
+pub enum ReadStringError {
+    /// The string's length prefix is not valid LEB128.
+    #[error("error reading LEB128 encoded number")]
+    Leb128(#[from] leb128::read::Error),
+    /// The string data is not valid UTF-8.
+    #[error("error reading UTF-8 string data")]
+    Utf8(#[from] Utf8Error),
+    /// The string's offset or length is outside the bounds of the data blob.
+    #[error("string offset or length is out of bounds")]
+    OutOfBounds,
+}
 /// A struct for storing strings without duplicates.
 ///
 /// Add strings to the table with [`insert`](StringTable::insert). The
@@ -67,10 +83,16 @@ impl StringTable {
     pub fn lookup(string_bytes: &[u8], offset: usize) -> Option<&str> {
         let reader = &mut string_bytes.get(offset as usize..)?;
         let len = leb128::read::unsigned(reader).ok()? as usize;
+    /// Use this to retrieve a string that was previously [inserted](StringTable::insert) into a `StringTable`.
+    pub fn read(string_bytes: &[u8], offset: usize) -> Result<&str, ReadStringError> {
+        let reader = &mut string_bytes
+            .get(offset as usize..)
+            .ok_or(ReadStringError::OutOfBounds)?;
+        let len = leb128::read::unsigned(reader)? as usize;
 
-        let bytes = reader.get(..len)?;
+        let bytes = reader.get(..len).ok_or(ReadStringError::OutOfBounds)?;
 
-        std::str::from_utf8(bytes).ok()
+        std::str::from_utf8(bytes).map_err(ReadStringError::from)
     }
 
     /// Returns the total length of the strings in this table (including length prefixes).
