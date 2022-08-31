@@ -23,7 +23,7 @@ jobs:
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal --component rustfmt --component clippy
 
-      - uses: Swatinem/rust-cache@v1
+      - uses: Swatinem/rust-cache@v2
 
       - run: cargo fmt --all -- --check
 
@@ -40,7 +40,7 @@ jobs:
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal --component rust-docs
 
-      - uses: Swatinem/rust-cache@v1
+      - uses: Swatinem/rust-cache@v2
 
       - run: cargo doc --workspace --all-features --no-deps
 
@@ -60,7 +60,7 @@ jobs:
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
 
-      - uses: Swatinem/rust-cache@v1
+      - uses: Swatinem/rust-cache@v2
 
       - run: cargo test --workspace --all-features --all-targets
 
@@ -76,7 +76,7 @@ jobs:
 
       - uses: taiki-e/install-action@cargo-llvm-cov
 
-      - uses: Swatinem/rust-cache@v1
+      - uses: Swatinem/rust-cache@v2
 
       - run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
