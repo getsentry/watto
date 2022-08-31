@@ -1,6 +1,10 @@
 use std::collections::HashMap;
 
-/// TODO
+/// A struct for storing strings without duplicates.
+///
+/// Add strings to the table with [`insert`](StringTable::insert). The
+/// returned `usize` can be used to [`lookup`](StringTable::lookup) the string
+/// in the table's serialized representation.
 /// # Example
 /// ```
 /// use watto::StringTable;
@@ -59,7 +63,7 @@ impl StringTable {
 
     /// Returns the string stored at the given offset in the byte slice, if any.
     ///
-    /// Use this to look up a string that was previously added to a [`StringTable`].
+    /// Use this to look up a string that was previously [inserted](StringTable::insert) into a `StringTable`.
     pub fn lookup(string_bytes: &[u8], offset: usize) -> Option<&str> {
         let reader = &mut string_bytes.get(offset as usize..)?;
         let len = leb128::read::unsigned(reader).ok()? as usize;
