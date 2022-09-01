@@ -77,16 +77,18 @@ assert_eq!(bs, &[B(4), B(5), B(6)]);
 ```
 
 ## Alternatives
+
 Watto is strongly inspired by [`zerocopy`](https://docs.rs/zerocopy/0.6.1/zerocopy/).
 
 Differences between the two include:
 
-* `zerocopy` has two distinct traits for reading and writing bytes, `watto` only has one for both.
-* In  `zerocopy`, reading a value requires wrapping it in `LayoutVerified`. In `watto`, types implementing
+- `zerocopy` has two distinct traits for reading and writing bytes, `watto` only has one for both.
+- In `zerocopy`, reading a value requires wrapping it in `LayoutVerified`. In `watto`, types implementing
   `Pod` can be read directly.
-* `watto` includes a `Writer` that allows explicit alignment of output.
-* `watto` includes a `StringTable` for (de)serializing strings.
-* `zerocopy` includes endianness-aware integer types.
+- `watto` includes a `Writer` that allows explicit alignment of output.
+- `watto` includes a `StringTable` for (de)serializing strings.
+- `zerocopy` includes endianness-aware integer types.
+
 ## Why Watto?
 
 > Qui-Gon Jinn: I have... acquired a pod in a game of chance. The fastest ever built.
@@ -97,4 +99,4 @@ Differences between the two include:
 
 ## License
 
-Watto is licensed under the MIT license.
+Watto is licensed under the Apache-2.0 license.

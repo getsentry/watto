@@ -5,7 +5,7 @@ edition = "2021"
 
 description = "Utilities for parsing and serializing Plain Old Data"
 authors = ["Sentry <hello@sentry.io>"]
-license = "MIT"
+license = "Apache-2.0"
 readme = "README.md"
 documentation = "https://docs.rs/watto"
 homepage = "https://github.com/getsentry/watto"
@@ -19,8 +19,6 @@ strings = ["std", "leb128", "thiserror"]
 [dependencies]
 leb128 = { version = "0.2.5", optional = true }
 thiserror = { version = "1.0.33", optional = true }
-
-
 
 [package.metadata.docs.rs]
 all-features = true
