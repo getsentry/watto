@@ -79,6 +79,14 @@ impl StringTable {
         &self.bytes
     }
 
+    /// Returns a byte vector containing the concatenation of the strings that have been
+    /// added to this `StringTable`.
+    ///
+    /// This consumes the `StringTable`.
+    pub fn into_bytes(self) -> Vec<u8> {
+        self.bytes
+    }
+
     /// Returns the string stored at the given offset in the byte slice, if any.
     ///
     /// Use this to retrieve a string that was previously [inserted](StringTable::insert) into a `StringTable`.
