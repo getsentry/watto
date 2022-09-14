@@ -5,7 +5,6 @@
 #![cfg_attr(docsrs, feature(doc_cfg_hide))]
 #![cfg_attr(docsrs, doc(cfg_hide(doc)))]
 
-mod helpers;
 mod pod;
 #[cfg(feature = "strings")]
 mod string_table;
@@ -13,9 +12,9 @@ mod utils;
 #[cfg(feature = "writer")]
 mod writer;
 
-pub use helpers::*;
 pub use pod::*;
 #[cfg(feature = "strings")]
 pub use string_table::*;
+pub use utils::{align_to, align_to_type};
 #[cfg(feature = "writer")]
 pub use writer::*;
