@@ -42,6 +42,12 @@ impl<W: Write> Writer<W> {
 
         self.write(&PADDING_BYTES[0..len % PADDING_BYTES.len()])
     }
+
+    /// Explicitly aligns the output buffer to the alignment of `T` by writing the
+    /// necessary amount of padding bytes.
+    pub fn align_to_type<T>(&mut self) -> Result<usize> {
+        self.align_to(core::mem::align_of::<T>())
+    }
 }
 
 impl<W: Write> Write for Writer<W> {
