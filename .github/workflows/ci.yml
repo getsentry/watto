@@ -62,7 +62,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - run: cargo test --workspace --all-features --all-targets
+      - run: cargo test --workspace --all-features
 
   codecov:
     name: Code Coverage
