@@ -14,11 +14,12 @@ repository = "https://github.com/getsentry/watto"
 [features]
 std = []
 writer = ["std"]
-strings = ["std", "leb128", "thiserror"]
+strings = ["std", "hashbrown", "leb128", "thiserror"]
 
 [dependencies]
+hashbrown = { version = "0.15.1", optional = true }
 leb128 = { version = "0.2.5", optional = true }
-thiserror = { version = "1.0.33", optional = true }
+thiserror = { version = "2.0.3", optional = true }
 
 [package.metadata.docs.rs]
 all-features = true
