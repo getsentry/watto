@@ -1,5 +1,6 @@
 use core::str::Utf8Error;
 use std::collections::HashMap;
+use std::io::Cursor;
 
 use thiserror::Error;
 
@@ -16,6 +17,7 @@ pub enum ReadStringError {
     #[error("string offset or length is out of bounds")]
     OutOfBounds,
 }
+
 /// A struct for storing strings without duplicates.
 ///
 /// Add strings to the table with [`insert`](StringTable::insert). The
@@ -30,12 +32,14 @@ pub enum ReadStringError {
 /// # Example
 /// ```
 /// use watto::StringTable;
+///
 /// let mut table = StringTable::new();
-/// let foo_idx = table.insert("foo");
-/// let bar_idx = table.insert("bar");
+/// let foo_offset = table.insert("foo");
+/// let bar_offset = table.insert("bar");
+///
 /// let string_bytes = table.as_bytes();
-/// assert_eq!(StringTable::read(string_bytes, foo_idx).unwrap(), "foo");
-/// assert_eq!(StringTable::read(string_bytes, bar_idx).unwrap(), "bar");
+/// assert_eq!(StringTable::read(string_bytes, foo_offset).unwrap(), "foo");
+/// assert_eq!(StringTable::read(string_bytes, bar_offset).unwrap(), "bar");
 /// ```
 #[derive(Debug, Clone, Default)]
 pub struct StringTable {
@@ -49,27 +53,53 @@ impl StringTable {
         Self::default()
     }
 
+    /// Initializes a [`StringTable`] from a previously serialized representation.
+    ///
+    /// This essentially reverses the [`as_bytes`](Self::as_bytes) call.
+    pub fn from_bytes(bytes: &[u8]) -> Result<Self, ReadStringError> {
+        let mut rest = bytes;
+
+        let mut string_offset = 0;
+        let mut strings: HashMap<_, _> = Default::default();
+        while !rest.is_empty() {
+            let mut cursor = Cursor::new(rest);
+            let len = leb128::read::unsigned(&mut cursor)? as usize;
+            // it would be nice if `leb128` would directly return this as well,
+            // so one wouldn't have to use a `Cursor`.
+            let leb_len = cursor.position() as usize;
+
+            let (string_bytes, new_rest) = rest
+                .split_at_checked(leb_len + len)
+                .ok_or(ReadStringError::OutOfBounds)?;
+
+            let string =
+                std::str::from_utf8(&string_bytes[leb_len..]).map_err(ReadStringError::from)?;
+            strings.insert(string.to_owned(), string_offset);
+
+            string_offset += leb_len + len;
+            rest = new_rest;
+        }
+
+        Ok(Self {
+            strings,
+            bytes: bytes.into(),
+        })
+    }
+
     /// Insert a string into this `StringTable`.
     ///
     /// Returns an offset that can be used to retrieve the inserted string
     /// with [`read`](Self::read) after serializing this table with [`as_bytes`](Self::as_bytes).
     pub fn insert(&mut self, s: &str) -> usize {
-        let Self {
-            ref mut strings,
-            ref mut bytes,
-        } = self;
-        if s.is_empty() {
-            return usize::MAX;
-        }
-        if let Some(&offset) = strings.get(s) {
+        if let Some(&offset) = self.strings.get(s) {
             return offset;
         }
-        let string_offset = bytes.len() as usize;
+        let string_offset = self.bytes.len();
         let string_len = s.len() as u64;
-        leb128::write::unsigned(bytes, string_len).unwrap();
-        bytes.extend(s.bytes());
+        leb128::write::unsigned(&mut self.bytes, string_len).unwrap();
+        self.bytes.extend_from_slice(s.as_bytes());
 
-        strings.insert(s.to_owned(), string_offset);
+        self.strings.insert(s.to_owned(), string_offset);
         string_offset
     }
 
@@ -92,7 +122,7 @@ impl StringTable {
     /// Use this to retrieve a string that was previously [inserted](StringTable::insert) into a `StringTable`.
     pub fn read(string_bytes: &[u8], offset: usize) -> Result<&str, ReadStringError> {
         let reader = &mut string_bytes
-            .get(offset as usize..)
+            .get(offset..)
             .ok_or(ReadStringError::OutOfBounds)?;
         let len = leb128::read::unsigned(reader)? as usize;
 

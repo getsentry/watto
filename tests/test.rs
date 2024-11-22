@@ -128,3 +128,38 @@ mod writer_tests {
         )
     }
 }
+
+#[cfg(feature = "strings")]
+mod string_tests {
+    use watto::StringTable;
+
+    #[test]
+    fn test_string_table() {
+        let mut string_table = StringTable::new();
+
+        let offset_empty = string_table.insert("");
+        let offset_abc = string_table.insert("abc");
+        let offset_def = string_table.insert("def");
+
+        assert_eq!(string_table.insert("abc"), offset_abc);
+
+        let string_bytes = string_table.as_bytes();
+        let read_empty = StringTable::read(string_bytes, offset_empty).unwrap();
+        let read_abc = StringTable::read(string_bytes, offset_abc).unwrap();
+        let read_def = StringTable::read(string_bytes, offset_def).unwrap();
+        assert_eq!(read_empty, "");
+        assert_eq!(read_abc, "abc");
+        assert_eq!(read_def, "def");
+
+        // re-create the table using a serialized buffer
+        let mut string_table = StringTable::from_bytes(string_bytes).unwrap();
+
+        assert_eq!(string_table.insert("abc"), offset_abc);
+
+        let string_bytes = string_table.as_bytes();
+        let read_abc = StringTable::read(string_bytes, offset_abc).unwrap();
+        let read_def = StringTable::read(string_bytes, offset_def).unwrap();
+        assert_eq!(read_abc, "abc");
+        assert_eq!(read_def, "def");
+    }
+}
