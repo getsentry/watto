@@ -55,9 +55,9 @@ unsafe impl Pod for B {}
 let mut writer = watto::Writer::new(vec![]);
 
 writer.write_all(Header { version: 1, num_as: 3 }.as_bytes()).unwrap();
-writer.align_to(mem::align_of::<A>()).unwrap();
+writer.align_to_type::<A>().unwrap();
 writer.write_all(&[A(1), A(2), A(3)].as_bytes()).unwrap();
-writer.align_to(mem::align_of::<B>()).unwrap();
+writer.align_to_type::<B>().unwrap();
 writer.write_all(&[B(4), B(5), B(6)].as_bytes()).unwrap();
 
 let buffer = writer.into_inner();
@@ -66,9 +66,9 @@ let buffer = writer.into_inner();
 let buffer = &buffer;
 
 let (header, buffer) = Header::ref_from_prefix(buffer).unwrap();
-let (_, buffer) = watto::align_to(buffer, mem::align_of::<A>()).unwrap();
+let (_, buffer) = watto::align_to_type::<A>(buffer).unwrap();
 let (r#as, buffer) = A::slice_from_prefix(buffer, header.num_as as usize).unwrap();
-let (_, buffer) = watto::align_to(buffer, mem::align_of::<B>()).unwrap();
+let (_, buffer) = watto::align_to_type::<B>(buffer).unwrap();
 let bs = B::slice_from_bytes(buffer).unwrap();
 
 assert_eq!(header.num_as, 3);
