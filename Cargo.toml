@@ -14,7 +14,8 @@ repository = "https://github.com/getsentry/watto"
 [features]
 std = []
 writer = ["std"]
-strings = ["std", "hashbrown", "leb128", "thiserror"]
+offset_set = ["std", "dep:hashbrown", "dep:leb128", "dep:thiserror"]
+strings = ["offset_set"]
 
 [dependencies]
 hashbrown = { version = "0.15.1", optional = true }
