@@ -129,6 +129,50 @@ mod writer_tests {
     }
 }
 
+#[cfg(feature = "offset_set")]
+mod offset_set_tests {
+    use watto::{OffsetSet, Pod};
+
+    #[test]
+    fn test_offset_set() {
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+        #[repr(C)]
+        struct CommitHash([u8; 20]);
+        unsafe impl Pod for CommitHash {}
+
+        let sha_1 = CommitHash([1; 20]);
+        let sha_2 = CommitHash([2; 20]);
+        let sha_3 = CommitHash([3; 20]);
+
+        let mut table = OffsetSet::new();
+
+        let offset_empty = table.insert(&[]);
+        let offset_12 = table.insert(&[sha_1, sha_2]);
+        let offset_23 = table.insert(&[sha_2, sha_3]);
+
+        assert_eq!(table.insert(&[sha_1, sha_2]), offset_12);
+
+        let buffer = table.as_bytes();
+        let read_empty = OffsetSet::<CommitHash>::read(buffer, offset_empty).unwrap();
+        let read_12 = OffsetSet::<CommitHash>::read(buffer, offset_12).unwrap();
+        let read_23 = OffsetSet::<CommitHash>::read(buffer, offset_23).unwrap();
+        assert_eq!(read_empty, &[]);
+        assert_eq!(read_12, &[sha_1, sha_2]);
+        assert_eq!(read_23, &[sha_2, sha_3]);
+
+        // re-create the table using a serialized buffer
+        let mut table = OffsetSet::<CommitHash>::from_bytes(buffer).unwrap();
+
+        assert_eq!(table.insert(&[sha_1, sha_2]), offset_12);
+
+        let string_bytes = table.as_bytes();
+        let read_12 = OffsetSet::<CommitHash>::read(string_bytes, offset_12).unwrap();
+        let read_23 = OffsetSet::<CommitHash>::read(string_bytes, offset_23).unwrap();
+        assert_eq!(read_12, &[sha_1, sha_2]);
+        assert_eq!(read_23, &[sha_2, sha_3]);
+    }
+}
+
 #[cfg(feature = "strings")]
 mod string_tests {
     use watto::StringTable;
