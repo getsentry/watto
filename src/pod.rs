@@ -78,7 +78,7 @@ pub unsafe trait Pod {
         let len = bytes.len();
         let elem_size = mem::size_of::<Self>();
 
-        if len % elem_size != 0 || !crate::utils::is_aligned_to(bytes, mem::align_of::<Self>()) {
+        if !len.is_multiple_of(elem_size) || !crate::utils::is_aligned_to(bytes, mem::align_of::<Self>()) {
             return None;
         }
 
