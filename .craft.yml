@@ -4,3 +4,4 @@ artifactProvider:
 targets:
   - name: crates
   - name: github
+minVersion: 2.18.0
