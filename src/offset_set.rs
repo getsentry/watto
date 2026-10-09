@@ -96,14 +96,10 @@ impl<T: Pod> OffsetSet<T> {
         // `len` is untrusted, so the element count has to be bounded by the
         // remaining buffer before it is scaled up, or a crafted length can
         // overflow either the multiplication or the addition.
-        let end = len
+        let bytes = len
             .checked_mul(mem::size_of::<T>())
             .and_then(|len_bytes| start.checked_add(len_bytes))
-            .filter(|end| *end <= buffer.len())
-            .ok_or(ReadOffsetSetError::OutOfBounds)?;
-
-        let bytes = buffer
-            .get(start..end)
+            .and_then(|end| buffer.get(start..end))
             .ok_or(ReadOffsetSetError::OutOfBounds)?;
         let slice = T::slice_from_bytes(bytes).ok_or(ReadOffsetSetError::OutOfBounds)?;
 
