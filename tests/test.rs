@@ -208,3 +208,48 @@ mod string_tests {
         assert_eq!(read_def, "def");
     }
 }
+
+#[cfg(feature = "offset_set")]
+mod offset_set_overflow_tests {
+    use watto::{OffsetSet, ReadOffsetSetError};
+
+    #[test]
+    fn test_offset_set_read_len_overflow() {
+        // LEB128 encoding of `u64::MAX`: an entry claiming a length this large
+        // must be rejected as out of bounds instead of overflowing the span
+        // computation.
+        let buffer = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01];
+        assert!(matches!(
+            OffsetSet::<u8>::read(&buffer, 0),
+            Err(ReadOffsetSetError::OutOfBounds)
+        ));
+        // The same crafted length must also be rejected for wider element
+        // types, where it overflows the element-count multiplication instead.
+        assert!(matches!(
+            OffsetSet::<u32>::read(&buffer, 0),
+            Err(ReadOffsetSetError::OutOfBounds)
+        ));
+        // A moderate length that simply exceeds the buffer must keep failing
+        // cleanly.
+        assert!(matches!(
+            OffsetSet::<u8>::read(&[0x64], 0),
+            Err(ReadOffsetSetError::OutOfBounds)
+        ));
+    }
+}
+
+#[cfg(feature = "strings")]
+mod string_overflow_tests {
+    use watto::{ReadStringError, StringTable};
+
+    #[test]
+    fn test_string_table_read_len_overflow() {
+        // A crafted string length near `usize::MAX` (LEB128 of `u64::MAX`)
+        // must be rejected instead of overflowing (issue #22).
+        let buffer = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01];
+        assert!(matches!(
+            StringTable::read(&buffer, 0),
+            Err(ReadStringError::OutOfBounds)
+        ));
+    }
+}
