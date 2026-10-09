@@ -93,7 +93,14 @@ impl<T: Pod> OffsetSet<T> {
         let leb_len = cursor.position() as usize;
 
         let start = offset + leb_len;
-        let end = start + len * mem::size_of::<T>();
+        // `len` is untrusted, so the element count has to be bounded by the
+        // remaining buffer before it is scaled up, or a crafted length can
+        // overflow either the multiplication or the addition.
+        let end = len
+            .checked_mul(mem::size_of::<T>())
+            .and_then(|len_bytes| start.checked_add(len_bytes))
+            .filter(|end| *end <= buffer.len())
+            .ok_or(ReadOffsetSetError::OutOfBounds)?;
 
         let bytes = buffer
             .get(start..end)
