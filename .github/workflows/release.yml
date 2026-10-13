@@ -4,11 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Version to release
-        required: true
+        description: Version to release (or "auto")
+        required: false
       force:
         description: Force a release even when there are release-blockers (optional)
         required: false
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   release:
@@ -32,7 +36,7 @@ jobs:
           rustup toolchain install stable --profile minimal
 
       - name: Prepare release
-        uses: getsentry/action-prepare-release@c8e1c2009ab08259029170132c384f03c1064c0e # v1
+        uses: getsentry/craft@3f2abdc5703191d12ef2cc013f792f1bd220f44d # v2
         env:
           GITHUB_TOKEN: ${{ steps.token.outputs.token }}
         with:
