@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
 
       - run: |
           rustup set auto-self-update disable
@@ -34,8 +34,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
 
-      - uses: actions-rs/audit-check@v1
+      - uses: actions-rs/audit-check@24a24e9d5c8179709dd1ad4d7ba661572de756e6 # v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
