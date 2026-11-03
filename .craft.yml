@@ -1,7 +1,9 @@
-changelogPolicy: auto
+changelog:
+  policy: auto
+preReleaseCommand: bash scripts/bump-version.sh
 artifactProvider:
   name: none
 targets:
   - name: crates
   - name: github
-minVersion: 2.18.0
+minVersion: 3.9.0
